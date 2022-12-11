@@ -1,0 +1,13 @@
+/* style.css */
+button#submit-button {
+  background-color: blue;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+button#submit-button:hover {
+  background-color: navy;
+  cursor: pointer;
+}

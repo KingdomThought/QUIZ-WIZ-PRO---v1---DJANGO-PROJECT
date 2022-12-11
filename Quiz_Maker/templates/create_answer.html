@@ -1,0 +1,15 @@
+<!-- create_answer.html -->
+
+<form method="post">
+    {% csrf_token %}
+    <label for="question_id">Question ID:</label>
+    <input type="text" id="question_id" name="question_id">
+    <br>
+    <label for="text">Answer:</label>
+    <input type="text" id="text" name="text">
+    <br>
+    <label for="is_correct">Is Correct?</label>
+    <input type="checkbox" id="is_correct" name="is_correct">
+    <br>
+    <button type="submit">Create Answer</button>
+</form>

@@ -1,0 +1,25 @@
+<!-- take_quiz.html -->
+
+<h1>Quiz: {{ quiz.name }}</h1>
+
+{% for question in questions %}
+    <h2>Question {{ forloop.counter }}: {{ question.text }}</h2>
+    <p>Time remaining: {{ question.duration }} seconds</p>
+
+    {% for answer in question.answer_set.all %}
+        <input type="radio" name="answers[{{ question.id }}]" value="{{ answer.id }}"> {{ answer.text }}<br>
+    {% endfor %}
+{% endfor %}
+
+<input type="submit" value="Submit">
+
+
+
+<h1>Quiz: {{ quiz.name }}</h1>
+
+{% for question in questions %}
+    <h2>Question {{ forloop.counter }}: {{ question.text }}</h2>
+    <p>Time remaining
+
+
+{% endfor%}

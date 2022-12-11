@@ -1,0 +1,19 @@
+<!-- take_quiz.html -->
+
+<form method="post">
+    {% csrf_token %}
+    <label for="quiz_id">Quiz ID:</label>
+    <input type="text" id="quiz_id" name="quiz_id">
+    <br>
+    {% for question in questions %}
+        <p>{{ question.text }}</p>
+        {% for answer in answers %}
+            {% if answer.question.id == question.id %}
+                <input type="radio" id="{{ answer.id }}" name="answers[{{ question.id }}]" value="{{ answer.id }}">
+                <label for="{{ answer.id }}">{{ answer.text }}</label>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+    <br>
+    <button type="submit">Submit Quiz</button>
+</form>

@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <title>Web Start Home Page</title>
+    <style>
+      body {
+        text-align: center;
+      }
+
+      button {
+        margin: 20px;
+        padding: 10px;
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Welcome to Web Start</h1>
+    <a href="{% url 'teacher_home' %}"><button>Teacher</button></a>
+    <a href="{% url 'student_home' %}"><button>Student</button></a>
+  </body>
+</html>
