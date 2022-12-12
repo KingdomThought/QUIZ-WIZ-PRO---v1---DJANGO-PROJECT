@@ -1,38 +1,39 @@
+from django.contrib import messages
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.utils.html import escape
 
 from django.contrib.auth import authenticate, login
 from django.shortcuts import redirect, render
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.views.decorators.csrf import csrf_protect
 
 
+@csrf_protect
 def login_view(request):
     if request.method == 'POST':
-        # Get the username and password from the form
-        username = request.POST['username']
-        password = request.POST['password']
-
-        # Authenticate the user
-        user = authenticate(request, username=username, password=password)
-
-        # If the user is authenticated, log them in
-        if user is not None:
-            login(request, user)
-            # Redirect to the create_quiz page
-            return redirect('create_quiz')
-
+        form = AuthenticationForm(request=request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is None:
+                messages.error(request, "Invalid username or password.")
+                return redirect('login_view')
+            else:
+                login(request, user)
+                messages.info(request, f"You are now logged in as {username}")
+                return redirect('Quiz_Maker/dashboard.html')
         else:
-            # Return an error message
-            return render(request, 'loginpage.html', {'error': 'Invalid login'})
-
-    else:
-        if request.user.is_authenticated:
-            # Redirect to the create_quiz page
-            return redirect('create_quiz')
-
-        else:
-            # Display the login form
-            return render(request, 'loginpage.html')
+            messages.error(request, "Invalid username or password.")
+            return redirect('login_view')
+    form = AuthenticationForm()
+    return render(request=request,
+                  template_name="loginpage.html",
+                  context={"form": form})
 
 
 def forgot_password_view(request):
@@ -98,21 +99,25 @@ def register_view(request):
         first_name = escape(request.POST['first_name'])
         last_name = escape(request.POST['last_name'])
         email = escape(request.POST['email'])
-        phone = escape(request.POST['phone'])
-        zip_code = escape(request.POST['zip_code'])
-        user_type = escape(request.POST['user_type'])
-        date_of_birth = escape(request.POST['date_of_birth'])
+        # phone = escape(request.POST['phone'])
+        # zip_code = escape(request.POST['zip_code'])
+        # user_type = escape(request.POST['user_type'])
+        password = escape(request.POST['password'])
+        username = escape(request.POST['username'])
+        # date_of_birth = escape(request.POST['date_of_birth'])
         password = escape(request.POST['password'])
         user = User.objects.filter(email=email).first()
+        # user = User.objects.create_user(first_name)
         if user is None:
             user = User.objects.create_user(
                 first_name=first_name,
                 last_name=last_name,
                 email=email,
-                phone=phone,
-                zip_code=zip_code,
-                user_type=user_type,
-                date_of_birth=date_of_birth,
+                # phone=phone,
+                # zip_code=zip_code,
+                # user_type=user_type,
+                username=username,
+                # date_of_birth=date_of_birth,
                 password=password
             )
             user.save()

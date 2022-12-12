@@ -1,6 +1,9 @@
 import secrets
 import time
 
+from .models import Quiz
+
+
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -15,8 +18,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
 
-def create_dash(request):
-    return redirect()
+
+def dashboard_view(request):
+    redirect( 'Quiz_Maker/dashboard.html')
 
 def create_quiz(request):
     if request.method == 'POST':
@@ -25,7 +29,10 @@ def create_quiz(request):
         grade_level = request.POST['grade_level']
 
         quiz = Quiz.objects.create(name=name, subject=subject, grade_level=grade_level)
-
+        quiz.name=name
+        quiz.subject=subject
+        quiz.grade_level=grade_level
+        quiz.save()
 
 
         return redirect('create_question.html')

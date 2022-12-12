@@ -16,10 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.contrib.auth import login
 from django.urls import path
-
+from Login.views import login_view
+from Quiz_Maker.views import dashboard_view
 from Login.views import register_view, login_view, forgot_password_view
 from Quiz_Maker import views
-from Quiz_Maker.views import take_quiz, create_answer, create_question, create_quiz, create_dash
+from Quiz_Maker.views import take_quiz, create_answer, create_question, create_quiz
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,7 +31,7 @@ urlpatterns = [
     path('', login_view, name='login_view'),
     path('take_quiz/', views.take_quiz, name='take_quiz'),
     path('register/', register_view, name='register_view'),
-    path('dashboard/', create_dash, name='dashboard'),
+    path('Quiz_Maker/dashboard.html', dashboard_view, name='dashboard'),
     path('forgotpassword/', forgot_password_view, name='forgot_password_view'),
 
     path('quiz/<int:quiz_id>/edit/', views.quiz_edit, name='quiz_edit'),
