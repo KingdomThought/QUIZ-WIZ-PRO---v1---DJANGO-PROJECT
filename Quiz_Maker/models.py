@@ -6,6 +6,7 @@ class Quiz(models.Model):
     name = models.CharField(max_length=200)
     subject = models.CharField(max_length=200)
     grade_level = models.CharField(max_length=200)
+    num_ques = models.IntegerField(default=5)
 
     def __str__(self):
         return self.name

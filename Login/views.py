@@ -26,7 +26,8 @@ def login_view(request):
             else:
                 login(request, user)
                 messages.info(request, f"You are now logged in as {username}")
-                return redirect('Quiz_Maker/dashboard.html')
+                # Return the user to the main dashboard page
+                return redirect('dashboard')
         else:
             messages.error(request, "Invalid username or password.")
             return redirect('login_view')

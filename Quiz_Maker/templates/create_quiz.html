@@ -48,25 +48,44 @@
         background-color: #0066B2;
       }
     </style>
+      <!-- Add the page header here -->
+    <header>
+      <h1>Quiz Maker</h1>
+    </header>
+
+    <!-- Add the page navigation bar here -->
+    <nav>
+      <ul>
+        <li><a href="create-quiz">Create a Quiz</a></li>
+        <li><a href="edit-quiz.html">Edit a Quiz</a></li>
+        <li><a href="delete-quiz.html">Delete a Quiz</a></li>
+        <li><a href="create-classroom.html">Create Classroom</a></li>
+        <li><a href="delete-classroom.html">Delete Classroom</a></li>
+        <li><a href="classroom-stats.html">ClassRoom Stats</a></li>
+        <li><a href="quiz-stats.html">Quiz Stats</a></li>
+      </ul>
+    </nav>
   </head>
-  <body>
-    <div id="create-form">
-      <h1>Create New Quiz</h1>
-      <form method="POST" action="{% url 'create_quiz' %}">
-        {% csrf_token %}
-        <input type="text" name="quiz_name" placeholder="Quiz Name" required>
-        <input type="text" name="quiz_subject" placeholder="Quiz Subject" required>
-        <select name="quiz_grade_level">
-          <option value="">Select Grade Level</option>
-          <option value="elementary">Elementary School</option>
-          <option value="middle">Middle School</option>
-          <option value="high">High School</option>
-          <option value="college">College</option>
-          <option value="adult">Adult</option>
-        </select>
-        <input type="number" name="number_of_questions" placeholder="Number of Questions" required>
-        <input type="submit" value="Create Quiz">
-      </form>
-    </div>
-  </body>
+
+  </head>
+<body>
+  <div id="create-form">
+    <h1>Create New Quiz</h1>
+    <form method="POST" action="{% url 'create_quiz' %}">
+      {% csrf_token %}
+      <input type="text" name="name" placeholder="Quiz Name" required>
+      <input type="text" name="subject" placeholder="Quiz Subject" required>
+      <select name="grade_level">
+        <option value="">Select Grade Level</option>
+        <option value="elementary">Elementary School</option>
+        <option value="middle">Middle School</option>
+        <option value="high">High School</option>
+        <option value="college">College</option>
+        <option value="adult">Adult</option>
+      </select>
+      <input type="number" name="num_ques" placeholder="num_ques" required>
+      <input type="submit" value="Create Quiz">
+    </form>
+  </div>
+</body>
 </html>

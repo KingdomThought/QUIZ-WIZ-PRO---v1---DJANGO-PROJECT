@@ -53,26 +53,25 @@
       }
     </style>
   </head>
-  <body>
-    <div id="create-form">
-      <h1>Create Question</h1>
-      <form method="post" action="{% url 'create_question' %}">
-        {% csrf_token %}
-        <textarea name="question_text" placeholder="Question" required></textarea>
-        <input type="radio" name="correct_answer" value="1" required>
-        <input type="text" name="answer_1" placeholder="Answer 1" required>
-        <br>
-        <input type="radio" name="correct_answer" value="2">
-        <input type="text" name="answer_2" placeholder="Answer 2" required>
-        <br>
-        <input type="radio" name="correct_answer" value="3">
-        <input type="text" name="answer_3" placeholder="Answer 3" required>
-        <br>
-        <input type="radio" name="correct_answer" value="4">
-        <input type="text" name="answer_4" placeholder="Answer 4" required>
-        <br>
-        <input type="submit" value="Create Question">
-      </form>
-    </div>
-  </body>
+<body>
+  <div id="create-form">
+    <h1>Create Question</h1>
+    <p>Question Number {{ num_ques }} of {{ num_ques }}</p>
+    <form method="post" action="{% url 'create_question' %}">
+      {% csrf_token %}
+      <textarea name="question_text" placeholder="Question" required></textarea>
+      <h1>Click here to confirm Correct Answer</h1>
+      <input type="radio" name="correct_answer" value="1" required>
+      <input type="text" name="answer_1" placeholder="Answer 1" required>
+      <br>
+      <input type="text" name="answer_2" placeholder="Answer 2" required>
+      <br>
+      <input type="text" name="answer_3" placeholder="Answer 3" required>
+      <br>
+      <input type="text" name="answer_4" placeholder="Answer 4" required>
+      <br>
+      <input type="submit" value="Create Question">
+    </form>
+  </div>
+</body>
 </html>

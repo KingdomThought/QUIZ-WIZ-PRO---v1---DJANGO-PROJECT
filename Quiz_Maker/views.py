@@ -1,8 +1,9 @@
 import secrets
 import time
 
-from .models import Quiz
+from django.urls import reverse
 
+from .models import Quiz
 
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -18,38 +19,79 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
 
-
+# @csrf_protect
 def dashboard_view(request):
-    redirect( 'Quiz_Maker/dashboard.html')
+    # Check if the user is authenticated
+    if not request.user.is_authenticated:
+        # Redirect the user to the login page if not authenticated
+        return redirect('login_view')
+
+    # Render the dashboard template
+    return render(request, 'dashboard.html')
+
 
 def create_quiz(request):
     if request.method == 'POST':
+        # Get the name, subject, and grade level from the request
         name = request.POST['name']
         subject = request.POST['subject']
         grade_level = request.POST['grade_level']
+        num_ques = request.POST['num_ques']
 
-        quiz = Quiz.objects.create(name=name, subject=subject, grade_level=grade_level)
-        quiz.name=name
-        quiz.subject=subject
-        quiz.grade_level=grade_level
-        quiz.save()
+        # Create a context object with the name, subject, grade level, and number of questions
+        context = {
+            'name': name,
+            'subject': subject,
+            'grade_level': grade_level,
+            'num_ques': num_ques
+        }
 
-
-        return redirect('create_question.html')
+        # Render the create_quiz.html template using the context
+        return render(request, 'create_question.html', context)
     else:
+        # Render the create_question.html template
         return render(request, 'create_quiz.html')
 
 
 def create_question(request):
+    # Use the context provided by the create_quiz view
+    context = request.POST
+
     if request.method == 'POST':
-        quiz_id = request.POST['quiz_id']
-        text = request.POST['text']
+        # Get the quiz_id and number of questions from the context
+        quiz_id = context['quiz_id']
+        num_ques = context['num_ques']
 
-        question = Question.objects.create(quiz_id=quiz_id, text=text)
+        # Create the specified number of questions for the quiz
+        for i in range(num_ques):
+            # Get the text and duration for each question
+            text = context[f'text_{i}']
+            duration = context[f'duration_{i}']
 
-        return HttpResponse('create_answer.html')
+            # Create a new question instance
+            question = Question.objects.create(quiz_id=quiz_id, text=text, duration=duration)
+
+            # Create the correct answer for this question
+            correct_answer_text = context[f'correct_answer_{i}']
+            correct_answer = Answer.objects.create(
+                question=question,
+                text=correct_answer_text,
+                is_correct=True
+            )
+
+            # Create the incorrect answers for this question
+            for j in range(3):
+                incorrect_answer_text = context[f'incorrect_answer_{i}_{j}']
+                incorrect_answer = Answer.objects.create(
+                    question=question,
+                    text=incorrect_answer_text,
+                    is_correct=False
+                )
+
+        return render(request, 'quiz_create_success.html')
     else:
-        return render(request, 'create_question.html')
+        # Pass the context to the create_question.html template
+        return render(request, 'create_question.html', context)
 
 
 def create_answer(request):
