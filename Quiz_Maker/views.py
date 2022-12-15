@@ -2,6 +2,7 @@ import secrets
 import time
 
 from django.urls import reverse
+from django.utils.datastructures import MultiValueDictKeyError
 
 from .models import Quiz
 
@@ -38,73 +39,68 @@ def create_quiz(request):
         grade_level = request.POST['grade_level']
         num_ques = request.POST['num_ques']
 
-        # Create a context object with the name, subject, grade level, and number of questions
-        context = {
-            'name': name,
-            'subject': subject,
-            'grade_level': grade_level,
-            'num_ques': num_ques
-        }
+        # Create a Quiz object and add it to the database
+        quiz = Quiz(name=name, subject=subject, grade_level=grade_level, num_ques=num_ques)
+        quiz.save()
 
-        # Render the create_quiz.html template using the context
-        return render(request, 'create_question.html', context)
+        # Query the database for the id of the Quiz model
+        quiz_id = quiz.id
+        quiz_name = quiz.name
+
+        # Call the create_question function, passing the num_ques argument
+        return create_question(request, quiz_id=quiz.id, num_ques=num_ques)
     else:
         # Render the create_question.html template
         return render(request, 'create_quiz.html')
 
 
-def create_question(request):
-    # Use the context provided by the create_quiz view
-    context = request.POST
+def quiz_create_success(request):
+    # Render the quiz_create_success.html template
+    return render(request, 'quiz_create_success.html')
 
+
+def create_question(request, quiz_id, num_ques):
+    # Check if the request method is POST
     if request.method == 'POST':
-        # Get the quiz_id and number of questions from the context
-        quiz_id = context['quiz_id']
-        num_ques = context['num_ques']
+        # Try to get the question text from the request.POST dictionary
+        text = request.POST.get('question_text', '')  # Set the default value of text to an empty string
 
-        # Create the specified number of questions for the quiz
-        for i in range(num_ques):
-            # Get the text and duration for each question
-            text = context[f'text_{i}']
-            duration = context[f'duration_{i}']
+        # Get the answers from the request.POST dictionary
+        answer_1 = request.POST.get('answer_1', "")
+        answer_2 = request.POST.get('answer_2', "")
+        answer_3 = request.POST.get('answer_3', "")
+        answer_4 = request.POST.get('answer_4', " ")
 
-            # Create a new question instance
-            question = Question.objects.create(quiz_id=quiz_id, text=text, duration=duration)
+        # Create the question object
+        question = Question(quiz_id=quiz_id, text=text, duration=60)
+        question.save()
 
-            # Create the correct answer for this question
-            correct_answer_text = context[f'correct_answer_{i}']
-            correct_answer = Answer.objects.create(
-                question=question,
-                text=correct_answer_text,
-                is_correct=True
-            )
+        # Create the answer objects
+        a1 = Answer(text=answer_1, is_correct=True, question_id=question.id)
+        a2 = Answer(text=answer_2, is_correct=False, question_id=question.id)
+        a3 = Answer(text=answer_3, is_correct=False, question_id=question.id)
+        a4 = Answer(text=answer_4, is_correct=False, question_id=question.id)
+        a1.save()
+        a2.save()
+        a3.save()
+        a4.save()
 
-            # Create the incorrect answers for this question
-            for j in range(3):
-                incorrect_answer_text = context[f'incorrect_answer_{i}_{j}']
-                incorrect_answer = Answer.objects.create(
-                    question=question,
-                    text=incorrect_answer_text,
-                    is_correct=False
-                )
+        # Decrement the number of questions
+        num_ques = int(num_ques)
+        num_ques -= 1
 
-        return render(request, 'quiz_create_success.html')
+        # If there are still questions left, reload the page
+        if int(num_ques) > 0:
+            return redirect('create_question', quiz_id=quiz_id, num_ques=num_ques)
+        else:
+            return redirect('quiz_create_success')
     else:
-        # Pass the context to the create_question.html template
-        return render(request, 'create_question.html', context)
+        # If num_ques is 0 or less, return immediately
+        if num_ques <= 0:
+            return redirect('quiz_create_success')
 
-
-def create_answer(request):
-    if request.method == 'POST':
-        question_id = request.POST['question_id']
-        text = request.POST['text']
-        is_correct = request.POST['is_correct']
-
-        answer = Answer.objects.create(question_id=question_id, text=text, is_correct=is_correct)
-
-        return HttpResponse('Answer created successfully!')
-    else:
-        return render(request, 'create_answer.html')
+        # Pass the quiz_id and num_ques to the create_question.html template
+        return render(request, 'create_question.html', {'quiz_id': quiz_id, 'num_ques': num_ques})
 
 
 def quiz_edit(request):
@@ -177,6 +173,3 @@ def final_grade(request):
     return render(request, 'final_grade.html', {
         'courses': courses,
     })
-
-
-from django.shortcuts import render, redirect

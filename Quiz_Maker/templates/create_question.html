@@ -56,12 +56,12 @@
 <body>
   <div id="create-form">
     <h1>Create Question</h1>
-    <p>Question Number {{ num_ques }} of {{ num_ques }}</p>
-    <form method="post" action="{% url 'create_question' %}">
+    <p>Question Number {{ i }} of {{ num_ques }}</p>
+    <!-- In the create_question.html template -->
+    <form method="post" action="{% url 'create_question' quiz_id=quiz_id  num_ques=num_ques %}">
       {% csrf_token %}
-      <textarea name="question_text" placeholder="Question" required></textarea>
-      <h1>Click here to confirm Correct Answer</h1>
-      <input type="radio" name="correct_answer" value="1" required>
+      <input type="text" name="question_text" placeholder="Question" required>
+      <br>
       <input type="text" name="answer_1" placeholder="Answer 1" required>
       <br>
       <input type="text" name="answer_2" placeholder="Answer 2" required>
@@ -74,4 +74,3 @@
     </form>
   </div>
 </body>
-</html>

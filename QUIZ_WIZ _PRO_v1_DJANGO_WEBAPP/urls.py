@@ -14,6 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+
 from django.contrib.auth import login
 from django.urls import path
 from django.urls import include
@@ -21,18 +22,21 @@ from Login.views import login_view
 from Quiz_Maker.views import dashboard_view
 from Login.views import register_view, login_view, forgot_password_view
 from Quiz_Maker import views
-from Quiz_Maker.views import take_quiz, create_answer, create_question, create_quiz
+from Quiz_Maker.views import take_quiz, create_question, create_quiz
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('Quiz_Maker/create-quiz/', create_quiz, name='create_quiz'),
-    path('create-answer/', create_answer, name='create_answer'),
+    #path('create-answer/', create_answer, name='create_answer'),
     path('take-quiz/', take_quiz, name='take_quiz'),
     path('', login_view, name='login_view'),
     path('take_quiz/', views.take_quiz, name='take_quiz'),
-    path('register/', register_view, name='register_view'),
+    path('register.html/', register_view, name='register_view'),
     path('Quiz_Maker/dashboard.html', dashboard_view, name='dashboard'),
     path('forgotpassword/', forgot_password_view, name='forgot_password_view'),
-    path('Quiz_Maker/create-question/', create_question, name='create_question'),
-    path('quiz/<int:quiz_id>/edit/', views.quiz_edit, name='quiz_edit'),
+    path('Quiz_Maker/create-question/<int:quiz_id>/<int:num_ques>/', views.create_question, name='create_question'),
+    path('Quiz_Maker/quiz_create_success', views.quiz_create_success, name='quiz_create_success'),
+    #path('Quiz_Maker/', include('Quiz_Maker.urls', namespace='Quiz_Maker')),
+    #path('Quiz_Maker/', include('Quiz_Maker.urls', namespace='Quiz_Maker')),
+    #path('quiz/<int:quiz_id>/edit/', views.quiz_edit, name='quiz_edit'),
 ]

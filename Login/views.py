@@ -97,18 +97,21 @@ def generate_password_reset_token(user):
 
 def register_view(request):
     if request.method == 'POST':
-        first_name = escape(request.POST['first_name'])
-        last_name = escape(request.POST['last_name'])
-        email = escape(request.POST['email'])
-        # phone = escape(request.POST['phone'])
-        # zip_code = escape(request.POST['zip_code'])
-        # user_type = escape(request.POST['user_type'])
-        password = escape(request.POST['password'])
-        username = escape(request.POST['username'])
-        # date_of_birth = escape(request.POST['date_of_birth'])
-        password = escape(request.POST['password'])
+        # Get the form data
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
+        email = request.POST['email']
+        # phone = request.POST['phone']
+        # zip_code = request.POST['zip_code']
+        # user_type = request.POST['user_type']
+        username = request.POST['username']
+        # date_of_birth = request.POST['date_of_birth']
+        password = request.POST['password']
+
+        # Check if email already exists
         user = User.objects.filter(email=email).first()
-        # user = User.objects.create_user(first_name)
+
+        # If email doesn't exist, create a new user
         if user is None:
             user = User.objects.create_user(
                 first_name=first_name,
@@ -125,13 +128,13 @@ def register_view(request):
             user = authenticate(request, email=email, password=password)
             login(request, user)
             # Redirect to a success page.
-            return redirect('/success')
+            return redirect('register_view')
         else:
             # Return an 'email already exists' error message.
             return render(request, 'register.html', {'error': 'Email already exists'})
     else:
         if request.user.is_authenticated:
             # Redirect to a success page.
-            return redirect('/success')
+            return redirect('register_view')
         else:
             return render(request, 'register.html')

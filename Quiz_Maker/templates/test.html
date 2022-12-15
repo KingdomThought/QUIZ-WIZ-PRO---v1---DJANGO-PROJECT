@@ -1,0 +1,76 @@
+def create_question(request, quiz_id):
+    # Check if the request method is POST
+    if request.method == 'POST':
+        # Get the question text, correct answer, and answer choices from the request
+        question_text = request.POST['question_text']
+        correct_answer = request.POST['correct_answer']
+        answer_1 = request.POST['answer_1']
+        answer_2 = request.POST['answer_2']
+        answer_3 = request.POST['answer_3']
+        answer_4 = request.POST['answer_4']
+
+        # Create the question object
+        question = Question(quiz_id=quiz_id, question=question_text)
+
+        # Save the question object to the database
+        question.save()
+
+        # Create the answer objects
+        answer_1 = Answer(question_id=question.id, answer=answer_1, correct=True)
+        answer_2 = Answer(question_id=question.id, answer=answer_2, correct=False)
+        answer_3 = Answer(question_id=question.id, answer=answer_3, correct=False)
+        answer_4 = Answer(question_id=question.id, answer=answer_4, correct=False)
+
+        # Set the correct answer
+        if correct_answer == '1':
+            answer_1.correct = True
+        elif correct_answer == '2':
+            answer_2.correct = True
+        elif correct_answer == '3':
+            answer_3.correct = True
+        elif correct_answer == '4':
+            answer_4.correct = True
+
+        # Save the answer objects to the
+
+
+
+
+
+*************************************************************
+
+
+
+def create_question(request, quiz_id):
+    # Check if the request method is POST
+    if request.method == 'POST':
+        # Get the question text, correct answer, and answers from the request
+        text = request.POST['question_text']
+        answer_1 = request.POST['answer_1']
+        answer_2 = request.POST['answer_2']
+        answer_3 = request.POST['answer_3']
+        answer_4 = request.POST['answer_4']
+
+        # Create the question object
+        question = Question(quiz_id=quiz_id,text=question_text, duration=60)
+        question.save()
+
+        # Create the answer objects
+        answer_1 = Answer(text=answer_1, is_correct=True, question_id=question.id)
+        answer_2 = Answer(text=answer_2, is_correct=False, question_id=question.id)
+        answer_3 = Answer(text=answer_3, is_correct=False, question_id=question.id)
+        answer_4 = Answer(text=answer_4, is_correct=False, question_id=question.id)
+
+        # Save the answer objects to the database
+        answer_1.save()
+        answer_2.save()
+        answer_3.save()
+        answer_4.save()
+
+        # Set the correct_answer field of the correct answer object to True
+        if correct_answer == '1':
+            answer_1.correct_answer = True
+        elif correct_answer == '2':
+            answer_2.correct_answer = True
+        elif correct_answer == '3':
+            answer_3.correct_answer = True
