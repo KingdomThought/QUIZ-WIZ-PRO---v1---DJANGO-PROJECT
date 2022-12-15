@@ -128,13 +128,13 @@ def register_view(request):
             user = authenticate(request, email=email, password=password)
             login(request, user)
             # Redirect to a success page.
-            return redirect('register_view')
+            return redirect('/')
         else:
             # Return an 'email already exists' error message.
             return render(request, 'register.html', {'error': 'Email already exists'})
     else:
         if request.user.is_authenticated:
             # Redirect to a success page.
-            return redirect('register_view')
+            return redirect('/')
         else:
             return render(request, 'register.html')

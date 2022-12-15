@@ -1,4 +1,4 @@
-{% load static %}
+{{% load static %}
 {% block content %}
 
 <html>
@@ -9,7 +9,7 @@
         text-align: center;
         background-color: #F1F1F1;
         font-family: Arial, sans-serif;
-
+      }
       #login-form {
         margin: 30px auto;
         width: 400px;
@@ -18,13 +18,11 @@
         border-radius: 5px;
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
       }
-
       #login-form h1 {
         margin: 0 0 20px 0;
         padding: 0;
         font-size: 24px;
       }
-
       #login-form input[type="text"],
       #login-form input[type="password"] {
         width: 100%;
@@ -34,7 +32,6 @@
         border: 1px solid #CCCCCC;
         font-size: 16px;
       }
-
       #login-form input[type="submit"] {
         width: 100%;
         padding: 10px;
@@ -45,24 +42,20 @@
         border: none;
         border-radius: 5px;
       }
-
       #login-form input[type="submit"]:hover {
         background-color: #0066B2;
       }
-
       #img {
       position: absolute;
       top: 10px;
       left: 10px;
       }
-
       nav ul {
         margin: 0;
         padding: 0;
         list-style: none;
         display: flex;
       }
-
       /* Define the style for each navigation link */
       nav a {
         text-decoration: none;
@@ -70,12 +63,10 @@
         font-size: 18px;
         padding: 0 15px;
       }
-
       nav a.active {
         color: #fff;
         background-color: #333;
       }
-
        header {
         display: flex;
         align-items: center;
@@ -84,26 +75,25 @@
         background-color: #333;
         color: #fff;
       }
-
       /* Define the page title */
       header h1 {
         margin: 0;
         font-size: 24px;
         font-weight: bold;
       }
-
       /* Define the page content */
       main {
         padding: 20px;
       }
-
       /* Define the page footer */
       footer {
         padding: 20px;
         text-align: center;
         background-color: #333;
         color: #fff;
+      }
     </style>
+    </header>
 
     </header>
 
@@ -117,7 +107,7 @@
 
   </head>
   <body>
-  <div id="img"> <p style="text-align:center;><img src="/path/to/logo.png" alt="Company Logo"></p> </div>
+  <div id="img"> <p style="text-align:center";><img src="/path/to/logo.png" alt="Company Logo"></p> </div>
     <div id="login-form">
       <h1>Login</h1>
       <form method="POST" action="{% url 'login_view' %}">

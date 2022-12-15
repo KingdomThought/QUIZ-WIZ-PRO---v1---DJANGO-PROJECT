@@ -98,32 +98,25 @@
     </style>
 
     </head>
-
 <body>
-
-       <h1>Quiz App</h1>
+    <header>
+        <h1>Quiz App</h1>
     </header>
     <nav>
         <ul>
-            <li><a href="#" class="active">Dashboard</a></li>
-            <li><a href="#">Create Quiz</a></li>
-            <li><a href="#">Exit</a></li>
+            <li><a href="{% url 'dashboard' %}" class="active">Dashboard</a></li>
         </ul>
     </nav>
     <main>
         <div id="success-message">
             <h1>You have successfully created your quiz!</h1>
-            <a href="#">Return to Dashboard</a>
-            <a href="#">Create Another Quiz</a>
-            <a href="#">Exit</a>
+            <a href="{% url 'dashboard' %}">Return to Dashboard</a>
         </div>
     </main>
     <footer>
         Copyright 2022 Quiz App
     </footer>
 </body>
-</html>
 
-</body>
 
 {% endblock content %}
