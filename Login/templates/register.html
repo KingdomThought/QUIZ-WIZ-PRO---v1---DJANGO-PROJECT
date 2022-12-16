@@ -64,30 +64,100 @@
     </style>
   </head>
 <body>
-    <div id="signup-form">
-      <h1>Sign Up</h1>
-      <form method="post" action="{% url 'register_view' %}">
-        {% csrf_token %}
-        <p style="font-size: small;">Select from the menu:</p>
-        <select name="user_type" required>
-          <option value="teacher_administrator">Teacher/Administrator</option>
-          <option value="student">Student</option>
-        </select>
-        <p style="font-size: small;">Personal Information:</p>
-        <input type="text" name="first_name" placeholder="First Name" required>
-        <input type="text" name="last_name" placeholder="Last Name" required>
-        <input type="email" name="email" placeholder="Email Address" required>
-        <p style="font-size: small;">Account Information:</p>
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <input type="password" name="confirm_password" placeholder="Confirm Password" required>
-        <input type="submit" value="Sign Up">
-      </form>
-    </div>
-<div id="footer">
+  <div id="signup-form">
+    <h1>Sign Up</h1>
+    <form method="post" action="{% url 'register_view' %}" onsubmit="checkPasswords()">
+      {% csrf_token %}
+      <p style="font-size: small;">Select from the menu:</p>
+      <select name="user_type" required>
+        <option value="teacher_administrator">Teacher/Administrator</option>
+        <option value="student">Student</option>
+      </select>
+      <p style="font-size: small;">Personal Information:</p>
+      <input type="text" name="first_name" placeholder="First Name" required oninput="validateName(this)">
+      <input type="text" name="last_name" placeholder="Last Name" required oninput="validateName(this)">
+      <input type="email" name="email" placeholder="Email Address" required>
+      <p style="font-size: small;">Account Information:</p>
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="password" id="password" name="password" placeholder="Password" required>
+      <input type="password" id="confirmPassword" name="confirm_password" placeholder="Confirm Password" required
+             oninput="validatePasswordConfirmation()" onsubmit="checkPasswords()">
+
+      <input type="submit" value="Sign Up">
+    </form>
+  </div>
+  <div id="footer">
     <p style="font-size: x-small;">Copyright &copy; 2022 My Website</p>
     <p style="font-size: x-small;">Contact us: <a href="mailto:info@mywebsite.com">info@mywebsite.com</a> | <a href="tel:123-456-7890">123-456-7890</a></p>
     <p style="font-size: x-small;">Follow us on <a href="https://www.facebook.com/mywebsite">Facebook</a> and <a href="https://www.instagram.com/mywebsite">Instagram</a></p>
     <p style="font-size: x-small;"><a href="/privacy-policy">Privacy Policy</a> | <a href="/terms-of-use">Terms of Use</a></p>
   </div>
-  </body>
+  <script>
+    function checkPasswords() {
+  var password = document.getElementById("password").value;
+  var confirmPassword = document.getElementById("confirmPassword").value;
+
+  if (password !== confirmPassword) {
+    alert("The passwords you entered do not match. Please try again.");
+  }
+}
+
+</script>
+<script>
+// Validate the first and last name fields
+  var firstName = document.getElementsByName("first_name")[0].value;
+  var lastName = document.getElementsByName("last_name")[0].value;
+  var nameRegex = /^[A-Za-z-]+$/;
+
+  if (!nameRegex.test(firstName)) {
+    alert("The first name you entered is not valid. Please enter a valid first name.");
+  }
+
+  if (!nameRegex.test(lastName)) {
+    alert("The last name you entered is not valid. Please enter a valid last name.");
+</script>
+
+<script>
+  function validateName(input) {
+    var name = input.value;
+    var nameRegex = /^[A-Za-z-]+$/;
+
+    if (!nameRegex.test(name)) {
+      input.setCustomValidity("Please enter a valid name (alphabetical characters and hyphens only)");
+    } else {
+      input.setCustomValidity("");
+    }
+  }
+</script>
+
+<script>
+
+  function validatePasswordConfirmation() {
+  var password = document.getElementById("password").value;
+  var confirmPassword = document.getElementById("confirmPassword").value;
+
+  if (password !== confirmPassword) {
+    confirmPassword.setCustomValidity("The passwords you entered do not match. Please try again.");
+  } else {
+    confirmPassword.setCustomValidity("");
+  }
+}
+</script>
+<script>
+  function validatePasswordConfirmation() {
+  var password = document.getElementById("password").value;
+  var confirmPassword = document.getElementById("confirmPassword").value;
+  var passwordRegex = /^[A-Za-z0-9!@#%^&*()_+-=]+$/;
+
+  if (password !== confirmPassword) {
+    confirmPassword.setCustomValidity("The passwords you entered do not match. Please try again.");
+  } else if (!passwordRegex.test(confirmPassword)) {
+    confirmPassword.setCustomValidity("The password you entered is not valid. Please enter a valid password.");
+  } else {
+    confirmPassword.setCustomValidity("");
+  }
+}
+
+</script>
+
+</body>
