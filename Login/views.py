@@ -23,8 +23,12 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 messages.info(request, f"You are now logged in as {username}")
-                # Return the user to the main dashboard page
-                return redirect('dashboard')
+                # Check the user's type and redirect to the appropriate dashboard
+                user_type = UserType.objects.get(id=user.id).user_type
+                if user_type == "student":
+                    return redirect('student_dashboard')
+                elif user_type == "teacher_administrator":
+                    return redirect('dashboard')
             else:
                 messages.error(request, "Invalid username or password.")
                 return redirect('login_view')
@@ -35,7 +39,6 @@ def login_view(request):
     return render(request=request,
                   template_name="loginpage.html",
                   context={"form": form})
-
 
 def forgot_password_view(request):
     if request.method == 'POST':
@@ -122,7 +125,6 @@ def register_view(request):
                 password=password
             )
             user.save()
-            #user_id = user.id
             type_of_user = UserType(user_type=user_type)
             type_of_user.save()
 
