@@ -90,7 +90,7 @@ def create_question(request, quiz_id, num_ques):
         num_ques -= 1
 
         # If there are still questions left, reload the page
-        if int(num_ques) > 0:
+        if num_ques > 0:
             return redirect('create_question', quiz_id=quiz_id, num_ques=num_ques)
         else:
             return redirect('quiz_create_success')
@@ -99,7 +99,7 @@ def create_question(request, quiz_id, num_ques):
         if num_ques <= 0:
             return redirect('quiz_create_success')
 
-        # Pass the quiz_id and num_ques to the create_question.html template
+        # Render the create_question.html template
         return render(request, 'create_question.html', {'quiz_id': quiz_id, 'num_ques': num_ques})
 
 

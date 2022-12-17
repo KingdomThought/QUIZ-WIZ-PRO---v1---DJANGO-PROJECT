@@ -1,15 +1,9 @@
-from django.contrib import messages
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.decorators import login_required
-from django.utils.html import escape
-
-from django.contrib.auth import authenticate, login
-from django.shortcuts import redirect, render
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.views.decorators.csrf import csrf_protect
+from django.contrib.auth.forms import AuthenticationForm
 
 
 @csrf_protect
@@ -20,14 +14,14 @@ def login_view(request):
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
-            if user is None:
-                messages.error(request, "Invalid username or password.")
-                return redirect('login_view')
-            else:
+            if user is not None:
                 login(request, user)
                 messages.info(request, f"You are now logged in as {username}")
                 # Return the user to the main dashboard page
                 return redirect('dashboard')
+            else:
+                messages.error(request, "Invalid username or password.")
+                return redirect('login_view')
         else:
             messages.error(request, "Invalid username or password.")
             return redirect('login_view')
@@ -108,11 +102,12 @@ def register_view(request):
         # date_of_birth = request.POST['date_of_birth']
         password = request.POST['password']
 
-        # Check if email already exists
-        user = User.objects.filter(email=email).first()
+        # Check if email or username already exists
+        user_by_email = User.objects.filter(email=email).first()
+        user_by_username = User.objects.filter(username=username).first()
 
-        # If email doesn't exist, create a new user
-        if user is None:
+        # If email and username don't exist, create a new user
+        if user_by_email is None and user_by_username is None:
             user = User.objects.create_user(
                 first_name=first_name,
                 last_name=last_name,
@@ -125,13 +120,17 @@ def register_view(request):
                 password=password
             )
             user.save()
-            user = authenticate(request, email=email, password=password)
+            user = authenticate(request, username=username, password=password)
             login(request, user)
             # Redirect to a success page.
             return redirect('/')
         else:
-            # Return an 'email already exists' error message.
-            return render(request, 'register.html', {'error': 'Email already exists'})
+            error_message = ""
+            if user_by_email is not None:
+                error_message += "Email already exists. "
+            if user_by_username is not None:
+                error_message += "Username already exists."
+            return render(request, 'register.html', {'error': error_message})
     else:
         if request.user.is_authenticated:
             # Redirect to a success page.
