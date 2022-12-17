@@ -48,7 +48,7 @@ def create_quiz(request):
         quiz_name = quiz.name
 
         # Call the create_question function, passing the num_ques argument
-        return create_question(request, quiz_id=quiz.id, num_ques=num_ques)
+        return create_question(request, quiz_id=quiz.id, num_ques=(int(num_ques)+1))
     else:
         # Render the create_question.html template
         return render(request, 'create_quiz.html')
@@ -66,7 +66,7 @@ def create_question(request, quiz_id, num_ques):
 
     # Check if the request method is POST
     if request.method == 'POST':
-        num_ques = int(num_ques) + 1
+
         # Try to get the question text from the request.POST dictionary
         text = request.POST.get('question_text', '')  # Set the default value of text to an empty string
 
