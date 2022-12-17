@@ -69,21 +69,25 @@ def create_question(request, quiz_id, num_ques):
         answer_1 = request.POST.get('answer_1', "")
         answer_2 = request.POST.get('answer_2', "")
         answer_3 = request.POST.get('answer_3', "")
-        answer_4 = request.POST.get('answer_4', " ")
+        answer_4 = request.POST.get('answer_4', "")
 
         # Create the question object
         question = Question(quiz_id=quiz_id, text=text, duration=60)
         question.save()
 
         # Create the answer objects
-        a1 = Answer(text=answer_1, is_correct=True, question_id=question.id)
-        a2 = Answer(text=answer_2, is_correct=False, question_id=question.id)
-        a3 = Answer(text=answer_3, is_correct=False, question_id=question.id)
-        a4 = Answer(text=answer_4, is_correct=False, question_id=question.id)
-        a1.save()
-        a2.save()
-        a3.save()
-        a4.save()
+        if answer_1:
+            a1 = Answer(text=answer_1, is_correct=True, question_id=question.id)
+            a1.save()
+        if answer_2:
+            a2 = Answer(text=answer_2, is_correct=False, question_id=question.id)
+            a2.save()
+        if answer_3:
+            a3 = Answer(text=answer_3, is_correct=False, question_id=question.id)
+            a3.save()
+        if answer_4:
+            a4 = Answer(text=answer_4, is_correct=False, question_id=question.id)
+            a4.save()
 
         # Decrement the number of questions
         num_ques = int(num_ques)
@@ -95,12 +99,14 @@ def create_question(request, quiz_id, num_ques):
         else:
             return redirect('quiz_create_success')
     else:
-        # If num_ques is 0 or less, return immediately
+        # If num_ques is 0 or less, redirect to the quiz_create_success page
         if num_ques <= 0:
             return redirect('quiz_create_success')
 
         # Render the create_question.html template
         return render(request, 'create_question.html', {'quiz_id': quiz_id, 'num_ques': num_ques})
+
+
 
 
 def quiz_edit(request):
