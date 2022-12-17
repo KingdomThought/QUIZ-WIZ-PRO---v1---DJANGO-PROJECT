@@ -1,23 +1,7 @@
 import secrets
 import time
-
-from django.urls import reverse
-from django.utils.datastructures import MultiValueDictKeyError
-
-from .models import Quiz
-
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.shortcuts import render
-from django.core.mail import EmailMessage
-from django.template.loader import render_to_string
 from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
-from django.utils.html import escape
-from datetime import datetime
 from .models import Quiz, Question, Answer, Assignment, Course
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
 
 
 # @csrf_protect
@@ -48,7 +32,7 @@ def create_quiz(request):
         quiz_name = quiz.name
 
         # Call the create_question function, passing the num_ques argument
-        return create_question(request, quiz_id=quiz.id, num_ques=(int(num_ques)+1))
+        return create_question(request, quiz_id=quiz.id, num_ques=(int(num_ques) + 1))
     else:
         # Render the create_question.html template
         return render(request, 'create_quiz.html')
@@ -60,13 +44,14 @@ def quiz_create_success(request):
 
 
 def create_question(request, quiz_id, num_ques):
-    # Define the question_number variable and set its initial value to 1
-    question_number = 1
+    # Get the current number of questions for the quiz
+    num_ques_created = Question.objects.filter(quiz_id=quiz_id).count()
 
+    # Set the question_number variable to the current number of questions
+    question_number = num_ques_created
 
     # Check if the request method is POST
     if request.method == 'POST':
-
         # Try to get the question text from the request.POST dictionary
         text = request.POST.get('question_text', '')  # Set the default value of text to an empty string
 
@@ -82,16 +67,16 @@ def create_question(request, quiz_id, num_ques):
 
         # Create the answer objects
         if answer_1:
-            a1 = Answer(text=answer_1, is_correct=True, question_id=question.id)
+            a1 = Answer(text=answer_1, is_correct=True, question_id=question.id, order=question_number)
             a1.save()
         if answer_2:
-            a2 = Answer(text=answer_2, is_correct=False, question_id=question.id)
+            a2 = Answer(text=answer_2, is_correct=False, question_id=question.id,order=question_number)
             a2.save()
         if answer_3:
-            a3 = Answer(text=answer_3, is_correct=False, question_id=question.id)
+            a3 = Answer(text=answer_3, is_correct=False, question_id=question.id,order=question_number)
             a3.save()
         if answer_4:
-            a4 = Answer(text=answer_4, is_correct=False, question_id=question.id)
+            a4 = Answer(text=answer_4, is_correct=False, question_id=question.id,order=question_number)
             a4.save()
 
         # Decrement the number of questions
@@ -100,6 +85,7 @@ def create_question(request, quiz_id, num_ques):
 
         # Increment the question_number variable by 1
         question_number += 1
+
 
         # If there are still questions left, reload the page
         if num_ques > 0:
@@ -112,78 +98,46 @@ def create_question(request, quiz_id, num_ques):
             return redirect('quiz_create_success')
 
         # Render the create_question.html template
-        return render(request, 'create_question.html', {'quiz_id': quiz_id, 'num_ques': num_ques, 'question_number': question_number})
-
-
+        return render(request, 'create_question.html',
+                      {'quiz_id': quiz_id, 'num_ques': num_ques, 'question_number': question_number})
 
 
 def quiz_edit(request):
     pass
 
 
-def take_quiz(request):
+def take_quiz(request, quiz_id):
+    # Query the database for the quiz with the given quiz_id
+    quiz = Quiz.objects.get(id=quiz_id)
+
+    # Query the database for all of the questions in the quiz
+    questions = Question.objects.filter(quiz_id=quiz_id)
+
+    # Initialize the question_number variable to 1
+    question_number = 1
+
+    # Initialize the score variable to 0
+    score = 0
+
+    # If the request method is POST, process the submitted answers
     if request.method == 'POST':
-        quiz_id = request.POST['quiz_id']
-        answers = request.POST['answers']
-
-        # get quiz and its questions and answers
-        quiz = Quiz.objects.get(id=quiz_id)
-        questions = quiz.question_set.all()
-        answers = quiz.answer_set.all()
-
-        # start timer for each question
+        # Iterate through the questions
         for question in questions:
-            start = time.time()
-            end = start + question.duration
-            if time.time() >= end:
-                # stop quiz if timer has expired
-                return render(request, 'quiz_results.html', {
-                    'grade': 0,
-                    'status': 'fail',
-                })
-            else:
-                # calculate time remaining for each question
-                time_remaining = end - time.time()
-                question.time_remaining = time_remaining
+            # Get the submitted answer for the current question
+            answer = request.POST.get(f'question_{question_number}', '')
 
-        # grade quiz
-        num_correct = 0
-        for question in questions:
-            correct_answer = question.answer_set.get(is_correct=True)
-            if answers[str(question.id)] == correct_answer.id:
-                num_correct += 1
+            # If the submitted answer is correct, increment the score by 1
+            if answer == question.correct_answer:
+                score += 1
 
-        # calculate grade and pass/fail status
-        grade = num_correct / len(questions)
-        if grade >= 0.7:
-            status = 'pass'
-        else:
-            status = 'fail'
+            # Increment the question_number variable by 1
+            question_number += 1
 
-        return render(request, 'quiz_results.html', {
-            'grade': grade,
-            'status': status,
-        })
-    else:
-        return render(request, 'take_quiz.html')
+        # Calculate the percentage score
+        percentage_score = (score / len(questions)) * 100
+
+        # Render the quiz_results.html template with the percentage_score and quiz_id variables
+        return render(request, 'quiz_results.html', {'percentage_score': percentage_score, 'quiz_id': quiz_id})
 
 
-def final_grade(request):
-    # get all courses and assignments for student
-    courses = Course.objects.all()
-    assignments = Assignment.objects.all()
 
-    # calculate final grade for each course
-    for course in courses:
-        total_grade = 0
-        num_assignments = 0
-        for assignment in assignments:
-            if assignment.course == course:
-                total_grade += assignment.grade
-                num_assignments += 1
-        final_grade = total_grade / num_assignments
-        course.final_grade = final_grade
-
-    return render(request, 'final_grade.html', {
-        'courses': courses,
-    })

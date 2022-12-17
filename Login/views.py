@@ -6,6 +6,12 @@ from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.forms import AuthenticationForm
 
 
+from Login.models import UserType
+
+
+#from Login.models import CustomUser
+
+
 @csrf_protect
 def login_view(request):
     if request.method == 'POST':
@@ -97,7 +103,7 @@ def register_view(request):
         email = request.POST['email']
         # phone = request.POST['phone']
         # zip_code = request.POST['zip_code']
-        # user_type = request.POST['user_type']
+        user_type = request.POST['user_type']
         username = request.POST['username']
         # date_of_birth = request.POST['date_of_birth']
         password = request.POST['password']
@@ -112,14 +118,14 @@ def register_view(request):
                 first_name=first_name,
                 last_name=last_name,
                 email=email,
-                # phone=phone,
-                # zip_code=zip_code,
-                # user_type=user_type,
                 username=username,
-                # date_of_birth=date_of_birth,
                 password=password
             )
             user.save()
+            #user_id = user.id
+            type_of_user = UserType(user_type=user_type)
+            type_of_user.save()
+
             user = authenticate(request, username=username, password=password)
             login(request, user)
             # Redirect to a success page.

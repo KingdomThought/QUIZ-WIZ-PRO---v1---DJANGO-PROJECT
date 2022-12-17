@@ -41,6 +41,9 @@ class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     text = models.CharField(max_length=200)
     is_correct = models.BooleanField()
+    order = models.IntegerField(null=True)
 
     def __str__(self):
-        return self.text
+        return f'Answer "{self.text}" for question "{self.question}"'
+
+

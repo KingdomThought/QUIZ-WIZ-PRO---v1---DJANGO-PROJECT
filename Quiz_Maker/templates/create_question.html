@@ -56,7 +56,7 @@
 <body>
   <div id="create-form">
     <h1>Create Question</h1>
-    <p>Question Number {{ i }} of {{ num_ques }}</p>
+    <p>Question Number {{ question_number }} of {{ num_ques_created }}</p>
     <!-- In the create_question.html template -->
     <form method="post" action="{% url 'create_question' quiz_id=quiz_id  num_ques=num_ques %}">
       {% csrf_token %}
