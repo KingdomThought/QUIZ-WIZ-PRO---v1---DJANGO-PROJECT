@@ -60,8 +60,13 @@ def quiz_create_success(request):
 
 
 def create_question(request, quiz_id, num_ques):
+    # Define the question_number variable and set its initial value to 1
+    question_number = 1
+
+
     # Check if the request method is POST
     if request.method == 'POST':
+        num_ques = int(num_ques) + 1
         # Try to get the question text from the request.POST dictionary
         text = request.POST.get('question_text', '')  # Set the default value of text to an empty string
 
@@ -93,6 +98,9 @@ def create_question(request, quiz_id, num_ques):
         num_ques = int(num_ques)
         num_ques -= 1
 
+        # Increment the question_number variable by 1
+        question_number += 1
+
         # If there are still questions left, reload the page
         if num_ques > 0:
             return redirect('create_question', quiz_id=quiz_id, num_ques=num_ques)
@@ -104,7 +112,7 @@ def create_question(request, quiz_id, num_ques):
             return redirect('quiz_create_success')
 
         # Render the create_question.html template
-        return render(request, 'create_question.html', {'quiz_id': quiz_id, 'num_ques': num_ques})
+        return render(request, 'create_question.html', {'quiz_id': quiz_id, 'num_ques': num_ques, 'question_number': question_number})
 
 
 
