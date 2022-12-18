@@ -22,6 +22,20 @@ def dashboard_view(request):
     return render(request, 'dashboard.html')
 
 
+def home_view(request):
+    if request.user.is_authenticated:
+        # Get the user's type
+        user_type = UserType.objects.get(id=request.user.id).user_type
+        if user_type == "teacher_administrator":
+            # Redirect to the teacher/administrator dashboard
+            return redirect('dashboard')
+        elif user_type == "student":
+            # Redirect to the student dashboard
+            return redirect('student_dashboard')
+    # Redirect to the login page if the user is not logged in
+    return redirect('login')
+
+
 def student_dashboard_view(request):
     if request.user.is_authenticated:
         # Get the user's type

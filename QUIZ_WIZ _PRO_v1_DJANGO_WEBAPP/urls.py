@@ -19,7 +19,7 @@ from django.contrib.auth import login
 from django.urls import path
 from django.urls import include
 from Login.views import login_view
-from Quiz_Maker.views import dashboard_view, student_dashboard_view
+from Quiz_Maker.views import dashboard_view, student_dashboard_view, home_view
 from Login.views import register_view, login_view, forgot_password_view
 from Quiz_Maker import views
 from Quiz_Maker.views import take_quiz, create_question, create_quiz
@@ -28,7 +28,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('Quiz_Maker/create-quiz/', create_quiz, name='create_quiz'),
     path('take-quiz/', take_quiz, name='take_quiz'),
-    path('', login_view, name='login_view'),
+    path('', home_view, name='home_view'),
+    #path('', login_view, name='login_view'),
     path('take_quiz/', views.take_quiz, name='take_quiz'),
     path('register.html', register_view, name='register_view'),
     path('Quiz_Maker/dashboard.html', dashboard_view, name='dashboard'),
