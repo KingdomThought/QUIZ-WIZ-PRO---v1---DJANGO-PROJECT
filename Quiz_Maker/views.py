@@ -15,6 +15,16 @@ def dashboard_view(request):
     return render(request, 'dashboard.html')
 
 
+def student_dashboard_view(request):
+    # Check if the user is authenticated
+    if not request.user.is_authenticated:
+        # Redirect the user to the login page if not authenticated
+        return redirect('login_view')
+
+    # Render the dashboard template
+    return render(request, 'student_dashboard.html')
+
+
 def create_quiz(request):
     if request.method == 'POST':
         # Get the name, subject, and grade level from the request
@@ -70,13 +80,13 @@ def create_question(request, quiz_id, num_ques):
             a1 = Answer(text=answer_1, is_correct=True, question_id=question.id, order=question_number)
             a1.save()
         if answer_2:
-            a2 = Answer(text=answer_2, is_correct=False, question_id=question.id,order=question_number)
+            a2 = Answer(text=answer_2, is_correct=False, question_id=question.id, order=question_number)
             a2.save()
         if answer_3:
-            a3 = Answer(text=answer_3, is_correct=False, question_id=question.id,order=question_number)
+            a3 = Answer(text=answer_3, is_correct=False, question_id=question.id, order=question_number)
             a3.save()
         if answer_4:
-            a4 = Answer(text=answer_4, is_correct=False, question_id=question.id,order=question_number)
+            a4 = Answer(text=answer_4, is_correct=False, question_id=question.id, order=question_number)
             a4.save()
 
         # Decrement the number of questions
@@ -85,7 +95,6 @@ def create_question(request, quiz_id, num_ques):
 
         # Increment the question_number variable by 1
         question_number += 1
-
 
         # If there are still questions left, reload the page
         if num_ques > 0:
@@ -138,6 +147,3 @@ def take_quiz(request, quiz_id):
 
         # Render the quiz_results.html template with the percentage_score and quiz_id variables
         return render(request, 'quiz_results.html', {'percentage_score': percentage_score, 'quiz_id': quiz_id})
-
-
-
