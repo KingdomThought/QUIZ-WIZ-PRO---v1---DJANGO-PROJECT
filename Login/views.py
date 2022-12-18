@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.models import Group
+from django.contrib.auth.models import User
 
 
 from Login.models import UserType
@@ -111,6 +113,10 @@ def register_view(request):
         # date_of_birth = request.POST['date_of_birth']
         password = request.POST['password']
 
+        # Create the groups if they don't already exist
+        teacher_admins_group, created = Group.objects.get_or_create(name='teachers_admins')
+        students_group, created = Group.objects.get_or_create(name='students')
+
         # Check if email or username already exists
         user_by_email = User.objects.filter(email=email).first()
         user_by_username = User.objects.filter(username=username).first()
@@ -127,6 +133,12 @@ def register_view(request):
             user.save()
             type_of_user = UserType(user_type=user_type)
             type_of_user.save()
+
+            # Add the user to the appropriate group based on their user type
+            if user_type == 'student':
+                students_group.user_set.add(user)
+            elif user_type == 'teacher_administrator':
+                teacher_admins_group.user_set.add(user)
 
             user = authenticate(request, username=username, password=password)
             login(request, user)
