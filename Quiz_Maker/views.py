@@ -1,28 +1,44 @@
 import secrets
 import time
 from django.shortcuts import render, redirect
+
+from Login.models import UserType
 from .models import Quiz, Question, Answer, Assignment, Course
 
 
 # @csrf_protect
 def dashboard_view(request):
-    # Check if the user is authenticated
-    if not request.user.is_authenticated:
-        # Redirect the user to the login page if not authenticated
-        return redirect('login_view')
+    if request.user.is_authenticated:
+        # Get the user's type
+        user_type = UserType.objects.get(id=request.user.id).user_type
+        # Redirect the user if they do not have the required permissions
+        if user_type != "teacher_administrator":
+            return redirect('unauthorized')
+    else:
+        # Redirect the user if they are not logged in
+        return redirect('login')
 
-    # Render the dashboard template
+    # Render the teacher dashboard template
     return render(request, 'dashboard.html')
 
 
 def student_dashboard_view(request):
-    # Check if the user is authenticated
-    if not request.user.is_authenticated:
-        # Redirect the user to the login page if not authenticated
-        return redirect('login_view')
+    if request.user.is_authenticated:
+        # Get the user's type
+        user_type = UserType.objects.get(id=request.user.id).user_type
+        # Redirect the user if they do not have the required permissions
+        if user_type != "student":
+            return redirect('unauthorized')
+    else:
+        # Redirect the user if they are not logged in
+        return redirect('login')
 
-    # Render the dashboard template
+    # Render the student dashboard template
     return render(request, 'student_dashboard.html')
+
+
+def unauthorized(request):
+    return render(request, 'unauthorized.html')
 
 
 def create_quiz(request):
