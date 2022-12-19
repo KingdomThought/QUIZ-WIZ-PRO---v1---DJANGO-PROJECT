@@ -107,19 +107,21 @@
       <h2>Welcome to the Quiz Maker Dashboard</h2>
       <p>From here, you can create, edit, and delete quizzes and classrooms.</p>
     </main>
-<table>
+<table style="margin: 0 auto; width: 80%; border-collapse: collapse; border-spacing: 0px;">
   <tr>
-    <th>Quiz Name</th>
-    <th>Quiz Subject</th>
-    <th>Grade Level</th>
-    <th>Number of Questions</th>
-  </tr>
+    <th style="text-align: left;">Quiz Name</th>
+    <th style="text-align: left;">Quiz Subject</th>
+    <th style="text-align: left;">Grade Level</th>
+    <th style="text-align: left;">Number of Questions</th>
+    <th style="text-align: left;">Delete</th>
+</tr>
   {% for quiz in quizzes %}
   <tr>
-    <td>{{ quiz.name }}</td>
-    <td>{{ quiz.subject }}</td>
-    <td>{{ quiz.grade_level }}</td>
-    <td>{{ quiz.num_ques }}</td>
+    <td style="text-align: left;">{{ quiz.name }}</td>
+    <td style="text-align: left;">{{ quiz.subject }}</td>
+    <td style="text-align: left;">{{ quiz.grade_level }}</td>
+    <td style="text-align: left;">{{ quiz.num_ques }}</td>
+    <td style="text-align: left;"><button>Delete</button></td>
   </tr>
   {% endfor %}
 </table>
