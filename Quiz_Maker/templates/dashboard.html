@@ -107,7 +107,22 @@
       <h2>Welcome to the Quiz Maker Dashboard</h2>
       <p>From here, you can create, edit, and delete quizzes and classrooms.</p>
     </main>
-
+<table>
+  <tr>
+    <th>Quiz Name</th>
+    <th>Quiz Subject</th>
+    <th>Grade Level</th>
+    <th>Number of Questions</th>
+  </tr>
+  {% for quiz in quizzes %}
+  <tr>
+    <td>{{ quiz.name }}</td>
+    <td>{{ quiz.subject }}</td>
+    <td>{{ quiz.grade_level }}</td>
+    <td>{{ quiz.num_questions }}</td>
+  </tr>
+  {% endfor %}
+</table>
     <!-- Add the page footer here -->
     <footer>
       <p>Copyright &copy; 2021 Quiz Maker</p>

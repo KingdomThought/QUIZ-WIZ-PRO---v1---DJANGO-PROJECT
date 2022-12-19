@@ -3,11 +3,12 @@ import time
 from django.shortcuts import render, redirect
 
 from Login.models import UserType
-from .models import Quiz, Question, Answer, Assignment, Course
+from .models import Quiz, Question, Answer
 
 
 # @csrf_protect
 def dashboard_view(request):
+    quizzes = Quiz.objects.filter(user_id=request.user.id)
     if request.user.is_authenticated:
         # Get the user's type
         user_type = UserType.objects.get(id=request.user.id).user_type
@@ -19,7 +20,7 @@ def dashboard_view(request):
         return redirect('login')
 
     # Render the teacher dashboard template
-    return render(request, 'dashboard.html')
+    return render(request, 'dashboard.html', {'quizzes': quizzes})
 
 
 def home_view(request):
@@ -33,7 +34,7 @@ def home_view(request):
             # Redirect to the student dashboard
             return redirect('student_dashboard')
     # Redirect to the login page if the user is not logged in
-    return redirect('login')
+    return redirect('login_view')
 
 
 def student_dashboard_view(request):
@@ -63,8 +64,12 @@ def create_quiz(request):
         grade_level = request.POST['grade_level']
         num_ques = request.POST['num_ques']
 
+        # Query the database for the current user_id
+        current_user = request.user  # Get the current user from the request
+        user_id = current_user.id  # Get the user_id from the current user
+
         # Create a Quiz object and add it to the database
-        quiz = Quiz(name=name, subject=subject, grade_level=grade_level, num_ques=num_ques)
+        quiz = Quiz(name=name, subject=subject, grade_level=grade_level, num_ques=num_ques, user_id=user_id)
         quiz.save()
 
         # Query the database for the id of the Quiz model
@@ -78,12 +83,15 @@ def create_quiz(request):
         return render(request, 'create_quiz.html')
 
 
+
+
 def quiz_create_success(request):
     # Render the quiz_create_success.html template
     return render(request, 'quiz_create_success.html')
 
 
 def create_question(request, quiz_id, num_ques):
+
     # Get the current number of questions for the quiz
     num_ques_created = Question.objects.filter(quiz_id=quiz_id).count()
 
@@ -165,8 +173,18 @@ def take_quiz(request, quiz_id):
             # Get the submitted answer for the current question
             answer = request.POST.get(f'question_{question_number}', '')
 
+            # Query the database for the answer options for the current question
+            answers = Answer.objects.filter(question_id=question.id)
+
+            # Check if the submitted answer is correct
+            is_correct = False
+            for a in answers:
+                if a.text == answer and a.is_correct:
+                    is_correct = True
+                    break
+
             # If the submitted answer is correct, increment the score by 1
-            if answer == question.correct_answer:
+            if is_correct:
                 score += 1
 
             # Increment the question_number variable by 1

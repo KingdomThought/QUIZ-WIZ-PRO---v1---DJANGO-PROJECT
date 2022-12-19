@@ -7,6 +7,7 @@ class Quiz(models.Model):
     subject = models.CharField(max_length=200)
     grade_level = models.CharField(max_length=200)
     num_ques = models.IntegerField(default=5)
+    user_id = models.IntegerField()
 
     def __str__(self):
         return self.name
@@ -15,7 +16,7 @@ class Quiz(models.Model):
 class Question(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
     text = models.CharField(max_length=200)
-    duration = models.IntegerField()  # add this line to set duration for each question
+    duration = models.IntegerField()
 
     def __str__(self):
         return self.text
