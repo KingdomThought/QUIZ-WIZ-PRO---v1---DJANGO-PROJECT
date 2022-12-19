@@ -63,13 +63,16 @@ def create_quiz(request):
         subject = request.POST['subject']
         grade_level = request.POST['grade_level']
         num_ques = request.POST['num_ques']
+        quiz_pw = request.POST['quiz_pw']
 
         # Query the database for the current user_id
         current_user = request.user  # Get the current user from the request
         user_id = current_user.id  # Get the user_id from the current user
 
         # Create a Quiz object and add it to the database
-        quiz = Quiz(name=name, subject=subject, grade_level=grade_level, num_ques=num_ques, user_id=user_id)
+        quiz = Quiz(name=name, subject=subject,
+                    grade_level=grade_level, num_ques=num_ques,
+                    user_id=user_id, quiz_pw=quiz_pw)
         quiz.save()
 
         # Query the database for the id of the Quiz model
@@ -83,15 +86,12 @@ def create_quiz(request):
         return render(request, 'create_quiz.html')
 
 
-
-
 def quiz_create_success(request):
     # Render the quiz_create_success.html template
     return render(request, 'quiz_create_success.html')
 
 
 def create_question(request, quiz_id, num_ques):
-
     # Get the current number of questions for the quiz
     num_ques_created = Question.objects.filter(quiz_id=quiz_id).count()
 
