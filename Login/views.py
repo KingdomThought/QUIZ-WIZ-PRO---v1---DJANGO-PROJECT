@@ -49,7 +49,7 @@ def logout_view(request):
     logout(request)
 
     # Redirect the user to the login page
-    return redirect('login')
+    return redirect('login_view')
 
 
 def forgot_password_view(request):

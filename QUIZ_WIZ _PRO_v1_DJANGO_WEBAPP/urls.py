@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.contrib.auth import login
 from django.urls import path
 from django.urls import include
-from Login.views import login_view
+from Login.views import login_view, logout_view
 from Quiz_Maker.views import dashboard_view, student_dashboard_view, home_view
 from Login.views import register_view, login_view, forgot_password_view
 from Quiz_Maker import views
@@ -34,6 +34,7 @@ urlpatterns = [
     path('register.html', register_view, name='register_view'),
     path('Quiz_Maker/dashboard.html', dashboard_view, name='dashboard'),
     path('Quiz_Maker/student_dashboard.html', student_dashboard_view, name='student_dashboard'),
+    path('Quiz_Maker/logout_success.html', logout_view, name='logout'),
     path('forgotpassword/', forgot_password_view, name='forgot_password_view'),
     path('Quiz_Maker/create-question/<int:quiz_id>/<int:num_ques>/', views.create_question, name='create_question'),
     path('Quiz_Maker/quiz_create_success', views.quiz_create_success, name='quiz_create_success'),
