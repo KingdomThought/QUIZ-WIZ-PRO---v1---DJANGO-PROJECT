@@ -1,5 +1,7 @@
+import secrets
+
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_protect
@@ -7,11 +9,10 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
 
-
 from Login.models import UserType
 
 
-#from Login.models import CustomUser
+# from Login.models import CustomUser
 
 
 @csrf_protect
@@ -41,6 +42,15 @@ def login_view(request):
     return render(request=request,
                   template_name="loginpage.html",
                   context={"form": form})
+
+
+def logout_view(request):
+    # Log the user out
+    logout(request)
+
+    # Redirect the user to the login page
+    return redirect('login')
+
 
 def forgot_password_view(request):
     if request.method == 'POST':
@@ -106,11 +116,8 @@ def register_view(request):
         first_name = request.POST['first_name']
         last_name = request.POST['last_name']
         email = request.POST['email']
-        # phone = request.POST['phone']
-        # zip_code = request.POST['zip_code']
         user_type = request.POST['user_type']
         username = request.POST['username']
-        # date_of_birth = request.POST['date_of_birth']
         password = request.POST['password']
 
         # Create the groups if they don't already exist
