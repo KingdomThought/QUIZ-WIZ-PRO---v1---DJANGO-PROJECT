@@ -1,4 +1,5 @@
-{{% load static %}
+
+ {% load static %}
 {% block content %}
 
 <html>
@@ -24,7 +25,7 @@
         font-size: 24px;
       }
       #login-form input[type="text"],
-      #login-form input[type="password"] {
+      #login-form input[type="password"]{
         width: 100%;
         padding: 10px;
         margin-bottom: 20px;
@@ -67,7 +68,7 @@
         color: #fff;
         background-color: #333;
       }
-       header {
+      header {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -92,10 +93,12 @@
         background-color: #333;
         color: #fff;
       }
+      #parent {
+  display: flex;
+  justify-content: center;
+}
     </style>
-    </header>
 
-    </header>
 
     <!-- Add the page navigation bar here -->
     <nav>
@@ -107,7 +110,13 @@
 
   </head>
   <body>
-  <div id="img"> <p style="text-align:center";><img src="/path/to/logo.png" alt="Company Logo"></p> </div>
+  <body>
+  <div id="parent">
+    <div id="img">
+      <p style="text-align:center">
+        <img src="/path/to/logo.png" alt="Company Logo">
+      </p>
+    </div>
     <div id="login-form">
       <h1>Login</h1>
       <form method="POST" action="{% url 'login_view' %}">
@@ -120,7 +129,8 @@
         <a href="{% url 'forgot_password_view' %}">If you forgot your password click here</a>
       </form>
     </div>
-  </body>
+  </div>
+</body>
 </html>
 
 {% endblock content %}

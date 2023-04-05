@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz Information</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-top: 16px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+            text-decoration: none;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Quiz Information</h1>
+    <h2>Quiz Name: {{ quiz_name }}</h2>
+    <h3>Subject: {{ quiz_subject }}</h3>
+    <h3>Grade Level: {{ quiz_grade_level }}</h3>
+    <h3>Number of Questions: {{ quiz_num_ques }}</h3>
+
+    <form action="{% url 'take_quiz' quiz_id 1 %}" method="post">
+    {% csrf_token %}
+        <input type="hidden" name="quiz_pw" value="{{ quiz_pw }}">
+        <input type="submit" value="Start Quiz" class="btn">
+    </form>
+</body>
+</html>

@@ -1,4 +1,3 @@
-# Create your models here.
 from django.db import models
 
 
@@ -14,10 +13,22 @@ class Quiz(models.Model):
         return self.name
 
 
+class Answer(models.Model):
+    question = models.ForeignKey('Question', on_delete=models.CASCADE)
+    text = models.CharField(max_length=200)
+    is_correct = models.BooleanField()
+    order = models.IntegerField(null=True)
+
+    def __str__(self):
+        return f'Answer "{self.text}" for question "{self.question}"'
+
+
 class Question(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
     text = models.CharField(max_length=200)
+    order = models.IntegerField(null=True, default=0)
     duration = models.IntegerField()
+    submitted_answer = models.ForeignKey(Answer, on_delete=models.SET_NULL, null=True, related_name='+')
 
     def __str__(self):
         return self.text
@@ -37,15 +48,3 @@ class Assignment(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class Answer(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    text = models.CharField(max_length=200)
-    is_correct = models.BooleanField()
-    order = models.IntegerField(null=True)
-
-    def __str__(self):
-        return f'Answer "{self.text}" for question "{self.question}"'
-
-

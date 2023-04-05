@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-
+from django.urls import path
 from django.contrib.auth import login
 from django.urls import path
 from django.urls import include
@@ -27,16 +27,22 @@ from Quiz_Maker.views import take_quiz, create_question, create_quiz
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('Quiz_Maker/create-quiz/', create_quiz, name='create_quiz'),
-    path('take-quiz/', take_quiz, name='take_quiz'),
+    #path('take-quiz/', take_quiz, name='take_quiz'),
     path('', home_view, name='home_view'),
     path('loginpage.html', login_view, name='login_view'),
-    path('take_quiz/', views.take_quiz, name='take_quiz'),
+    #path('take_quiz/', views.take_quiz, name='take_quiz'),
     path('register.html', register_view, name='register_view'),
     path('Quiz_Maker/dashboard.html', dashboard_view, name='dashboard'),
     path('Quiz_Maker/student_dashboard.html', student_dashboard_view, name='student_dashboard'),
+    #path('Quiz_Maker/take_quiz/<int:quiz_id>/', views.take_quiz, name='take_quiz'),
+    #path('Quiz_Maker/take_quiz/<int:quiz_id>/<str:quiz_pw>/', views.take_quiz, name='take_quiz'),
+    path('take_quiz/<int:quiz_id>/<int:question_num>/', views.take_quiz, name='take_quiz'),
     path('Quiz_Maker/logout_success.html', logout_view, name='logout'),
     path('forgotpassword/', forgot_password_view, name='forgot_password_view'),
     path('Quiz_Maker/create-question/<int:quiz_id>/<int:num_ques>/', views.create_question, name='create_question'),
     path('Quiz_Maker/quiz_create_success', views.quiz_create_success, name='quiz_create_success'),
+    path('Quiz_Maker/start_quiz/<int:quiz_id>/', views.start_quiz, name='start_quiz'),
+    path('submit_answer/<int:quiz_id>/<int:question_id>/', views.submit_answer, name='submit_answer'),
+
 
 ]

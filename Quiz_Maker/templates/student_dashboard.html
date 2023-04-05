@@ -105,13 +105,19 @@
       <h2>Welcome to the Student Dashboard</h2>
       <p>From here, you can take quizzes, check your grades and review quizzes</p>
     </main>
+<form method="POST" action="{% url 'student_dashboard' %}">
+  {% csrf_token %}
+  <label for="quiz-id">Quiz ID:</label>
+  <input type="text" id="quiz-id" name="quiz-id" required>
+  <label for="quiz-password">Quiz Password:</label>
+  <input type="password" id="quiz-password" name="quiz-password" required>
 
-     <form action="#">
-      <label for="quiz-id">Quiz ID:</label>
-      <input type="text" id="quiz-id" name="quiz-id" required>
-      <label for="quiz-password">Quiz Password:</label>
-      <input type="password" id="quiz-password" name="quiz-password" required>
-      <button type="submit">Take Quiz Now</button>
+  <button type="submit">Take Quiz Now</button>
+       </a>
+</form>
+</form>
+
+
     </form>
     <footer>
       <p>Copyright &copy; 2021 Quiz Maker</p>

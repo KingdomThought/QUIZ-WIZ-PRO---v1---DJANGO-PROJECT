@@ -1,8 +1,10 @@
 import secrets
 import time
 from django.shortcuts import render, redirect
-
+from django.views.decorators.csrf import csrf_protect
+from django.shortcuts import get_object_or_404
 from Login.models import UserType
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Quiz, Question, Answer
 
 
@@ -35,21 +37,6 @@ def home_view(request):
             return redirect('student_dashboard')
     # Redirect to the login page if the user is not logged in
     return redirect('login_view')
-
-
-def student_dashboard_view(request):
-    if request.user.is_authenticated:
-        # Get the user's type
-        user_type = UserType.objects.get(id=request.user.id).user_type
-        # Redirect the user if they do not have the required permissions
-        if user_type != "student":
-            return redirect('unauthorized')
-    else:
-        # Redirect the user if they are not logged in
-        return redirect('login')
-
-    # Render the student dashboard template
-    return render(request, 'student_dashboard.html')
 
 
 def unauthorized(request):
@@ -110,7 +97,7 @@ def create_question(request, quiz_id, num_ques):
         answer_4 = request.POST.get('answer_4', "")
 
         # Create the question object
-        question = Question(quiz_id=quiz_id, text=text, duration=60)
+        question = Question(quiz_id=quiz_id, text=text, duration=60, order=question_number)
         question.save()
 
         # Create the answer objects
@@ -153,45 +140,120 @@ def quiz_edit(request):
     pass
 
 
-def take_quiz(request, quiz_id):
-    # Query the database for the quiz with the given quiz_id
-    quiz = Quiz.objects.get(id=quiz_id)
+def student_dashboard_view(request):
+    # Redirect the user if they are not logged in
+    if not request.user.is_authenticated:
+        return redirect('login')
 
-    # Query the database for all of the questions in the quiz
-    questions = Question.objects.filter(quiz_id=quiz_id)
+    # Get the user's type
+    try:
+        user_type = UserType.objects.get(id=request.user.id).user_type
+    except UserType.DoesNotExist:
+        return redirect('unauthorized')
 
-    # Initialize the question_number variable to 1
-    question_number = 1
+    # Redirect the user if they do not have the required permissions
+    if user_type != "student":
+        return redirect('unauthorized')
 
-    # Initialize the score variable to 0
-    score = 0
-
-    # If the request method is POST, process the submitted answers
     if request.method == 'POST':
-        # Iterate through the questions
-        for question in questions:
-            # Get the submitted answer for the current question
-            answer = request.POST.get(f'question_{question_number}', '')
+        # Extract quiz-id and quiz-password from the request
+        quiz_id = request.POST.get('quiz-id')
+        quiz_pw = request.POST.get('quiz-password')
 
-            # Query the database for the answer options for the current question
-            answers = Answer.objects.filter(question_id=question.id)
+        # Check if the quiz_id and quiz_pw are valid
+        try:
+            quiz = Quiz.objects.get(id=quiz_id, quiz_pw=quiz_pw)
+            return redirect('start_quiz', quiz_id=quiz.id)
+        except Quiz.DoesNotExist:
+            # If quiz_id and quiz_pw combination is not valid, render the student_dashboard.html again
+            return render(request, 'student_dashboard.html', {'error_message': 'Invalid quiz number or password'})
 
-            # Check if the submitted answer is correct
-            is_correct = False
-            for a in answers:
-                if a.text == answer and a.is_correct:
-                    is_correct = True
-                    break
+    # Handle GET request
+    else:
+        return render(request, 'student_dashboard.html')
 
-            # If the submitted answer is correct, increment the score by 1
-            if is_correct:
-                score += 1
 
-            # Increment the question_number variable by 1
-            question_number += 1
+def take_quiz(request, quiz_id, question_num):
+    # Redirect the user if they are not logged in
+    if not request.user.is_authenticated:
+        return redirect('login')
 
-        # Calculate the percentage score
-        percentage_score = (score / len(questions)) * 100
+    # Get the user's type
+    try:
+        user_type = UserType.objects.get(id=request.user.id).user_type
+    except UserType.DoesNotExist:
+        return redirect('unauthorized')
 
-        # Render the quiz_results.html template with the percentage_score and quiz_id variables
-        return render(request, 'quiz_results.html', {'percentage_score': percentage_score, 'quiz_id': quiz_id})
+    # Redirect the user if they do not have the required permissions
+    if user_type != "student":
+        return redirect('unauthorized')
+
+    # Check if the quiz exists in the database
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+
+    # Get the questions and answers for the quiz
+    questions = Question.objects.filter(quiz=quiz)
+    num_ques = questions.count()
+
+    if question_num > num_ques:
+        return redirect('student_dashboard')
+
+    current_question = questions[question_num - 1]
+    current_answers = Answer.objects.filter(question=current_question)
+
+    return render(request, 'take_quiz.html', {
+        'quiz': quiz,
+        'current_question_num': question_num,
+        'num_ques': num_ques,
+        'current_question': current_question,
+        'current_answers': current_answers
+    })
+
+def start_quiz(request, quiz_id):
+    quiz = Quiz.objects.get(id=quiz_id)
+    quiz_name = quiz.name
+    quiz_subject = quiz.subject
+    quiz_grade_level = quiz.grade_level
+    quiz_num_ques = quiz.num_ques  # Updated to match the field name in the Quiz model
+    quiz_pw = quiz.quiz_pw
+
+    context = {
+        'quiz_name': quiz_name,
+        'quiz_subject': quiz_subject,
+        'quiz_grade_level': quiz_grade_level,
+        'quiz_num_ques': quiz_num_ques,
+        'quiz_id': quiz_id,
+        'quiz_pw': quiz_pw,
+    }
+
+    # Redirect to the 'take_quiz' view with the initial question_num set to 1
+    return redirect('take_quiz', quiz_id=quiz_id, question_num=1)
+
+
+
+def submit_answer(request, quiz_id, question_id):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    try:
+        user_type = UserType.objects.get(id=request.user.id).user_type
+    except UserType.DoesNotExist:
+        return redirect('unauthorized')
+
+    if user_type != "student":
+        return redirect('unauthorized')
+
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    question = get_object_or_404(Question, id=question_id)
+
+    if request.method == 'POST':
+        answer_id = request.POST.get('answer')
+        submitted_answer = get_object_or_404(Answer, id=answer_id)
+        question.submitted_answer = submitted_answer
+        question.save()
+
+        # Redirect the user to the next question or the results page.
+        # Implement the logic to determine the next question or results.
+        return redirect('next_question_or_results')
+
+    return redirect('take_quiz', quiz_id=quiz_id, quiz_pw=quiz.quiz_pw)

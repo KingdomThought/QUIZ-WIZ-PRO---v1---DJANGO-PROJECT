@@ -1,25 +1,22 @@
-<!-- take_quiz.html -->
-
-<h1>Quiz: {{ quiz.name }}</h1>
-
-{% for question in questions %}
-    <h2>Question {{ forloop.counter }}: {{ question.text }}</h2>
-    <p>Time remaining: {{ question.duration }} seconds</p>
-
-    {% for answer in question.answer_set.all %}
-        <input type="radio" name="answers[{{ question.id }}]" value="{{ answer.id }}"> {{ answer.text }}<br>
-    {% endfor %}
-{% endfor %}
-
-<input type="submit" value="Submit">
-
-
-
-<h1>Quiz: {{ quiz.name }}</h1>
-
-{% for question in questions %}
-    <h2>Question {{ forloop.counter }}: {{ question.text }}</h2>
-    <p>Time remaining
-
-
-{% endfor%}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Quiz</title>
+</head>
+<body>
+  {% if quiz and current_question and current_answers %}
+    <h1>{{ quiz.name }}</h1>
+    <h2>Question {{ current_question_num }} of {{ num_ques }}</h2>
+    <p>{{ current_question.text }}</p>
+    <form action="{% url 'submit_answer' quiz.id current_question.id %}" method="post">
+      {% csrf_token %}
+      {% for answer in current_answers %}
+        <input type="radio" name="answer" value="{{ answer.id }}" required>{{ answer.text }}<br>
+      {% endfor %}
+      <input type="submit" value="Submit">
+    </form>
+  {% else %}
+    <p>There was an error loading the quiz. Please try again later.</p>
+  {% endif %}
+</body>
+</html>
